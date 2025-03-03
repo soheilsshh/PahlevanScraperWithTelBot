@@ -1,101 +1,71 @@
-import requests
-from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support.ui import WebDriverWait
 from time import sleep
 
-#set the global pass and username
-USER_NAME = 40123313
-PASSWORD = 6440160877
+class SportPortalAutomation:
+    def __init__(self, username, password):
+        self.USER_NAME = username
+        self.PASSWORD = password
+        self.driver = webdriver.Firefox()
 
-#create driver 
-driver = webdriver.Firefox()
+    def open_site(self, url):
+        self.driver.get(url)
+        print("=========> open site")
+        sleep(1)
 
-driver.get("https://sport.shahroodut.ac.ir/SportLogin")
-print("=========> open site")
-sleep(1)
-#driver.maximize_window()
+    def find_elements(self):
+        self.username_element = self.driver.find_element(By.ID, "txtusv")
+        self.password_element = self.driver.find_element(By.ID, "passv")
+        self.check_box_element = self.driver.find_element(By.ID, "txtcode")
+        self.submit = self.driver.find_element(By.ID, "btlogin")
+        print("=========> find needed elements")
+        sleep(1)
 
-#define elemnt 
-username_elemnt = driver.find_element(By.ID , "txtusv")
-pasword_elemnt = driver.find_element(By.ID , "passv")
-check_box_element = driver.find_element(By.ID , "txtcode")
-submit = driver.find_element(By.ID , "btlogin")
-print("=========> finde needed elements")
-sleep(1)
+    def login(self):
+        self.username_element.send_keys(self.USER_NAME)
+        self.password_element.send_keys(self.PASSWORD)
 
-#send key for username
-username_elemnt.send_keys(USER_NAME)
+        text_textcode = self.driver.find_element(By.ID, "lbcode")
+        exe_codetext = eval(text_textcode.text)
+        self.check_box_element.send_keys(exe_codetext)
+        print("=========> send info into input box and submit")
+        self.submit.click()
+        sleep(1)
 
-#send key for password
-pasword_elemnt.send_keys(PASSWORD)
+    def navigate_to_courses(self):
+        courses = self.driver.find_element(By.XPATH, '//*[@id="nav-accordion"]/li[4]/a')
+        courses.click()
+        print("=========> click on course link")
+        sleep(1)
 
-#send key for text code
-text_textcode = driver.find_element(By.ID , "lbcode")
-exe_codetext = eval(text_textcode.text)
-check_box_element.send_keys(exe_codetext)
-print("=========> send info into input box and submit")
-submit.click()
-sleep(1)
+    def select_course_options(self):
+        selecting_list = [
+            self.driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dpfields"]/option[6]'),
+            self.driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dpsalon"]/option[9]')
+        ]
+        submit_query = self.driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_btreport"]')
+        for select in selecting_list:
+            print(f"clicking on {select.text}")
+            select.click()
 
-#get all of cors
-cours = driver.find_element(By.XPATH , '//*[@id="nav-accordion"]/li[4]/a')
-cours.click()
-print("=========>  click on course linke")
-sleep(1)
+        print("click to query")
+        sleep(1)
+        submit_query.click()
+        sleep(3)
 
-#selecting course
-selecting_list = [driver.find_element(By.XPATH , '//*[@id="ctl00_ContentPlaceHolder1_dpfields"]/option[6]'),
-                  driver.find_element(By.XPATH , '//*[@id="ctl00_ContentPlaceHolder1_dpsalon"]/option[9]')]
-for select in selecting_list:
-    print(f"clicking on {select.text}")
-    select.click()
- 
+    def show_course_details(self):
+        try:
+            detail_list = [
+                self.driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dlsessions"]/tbody/tr[2]/td/div/div[7]/b[1]'),
+                self.driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dlsessions"]/tbody/tr[2]/td/div/div[7]/b[2]'),
+                self.driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dlsessions"]/tbody/tr[2]/td/div/div[11]/b')
+            ]
 
+            print(f"Total course: {detail_list[0].text}\nNumber of sessions remaining: {detail_list[1].text}\nCapacity per session: {detail_list[2].text}")
+        except Exception as e:
+            print("There is no session available.")
+            print(f"Error: {e}")
 
-
-
-#finish
-# print ("Done")
-# driver.quit()
-# print("Finished")    
-
-
-# # Set up the Chrome WebDriver
-# driver = webdriver.Chrome()
-
-
-#     # Open Google
-# driver.get("https://sport.shahroodut.ac.ir/SportLogin")
-    
-#     # Find the search bar and enter a query
-# search_box = driver.find_element(By.NAME, "txtusv")
-# print(search_box)
-# # search_box.send_keys("Selenium with Python")
-# # search_box.send_keys(Keys.RETURN)
-    
-#     # Wait for results to load
-# # time.sleep(2)
-    
-# #     # Get search result titles
-# # results = driver.find_elements(By.CSS_SELECTOR, "h3")
-# # for index, result in enumerate(results[:5]):  # Print top 5 results
-# #     print(f"{index+1}. {result.text}")
-    
-
-# # driver.quit()
-
-
-
-# #url for scraping : https://sport.shahroodut.ac.ir/SportLogin
-
-# URL = 'https://sport.shahroodut.ac.ir/SportLogin'
-# page = requests.get(URL)
-
-# soup = BeautifulSoup(page.content , 'html.parser')
-
-# result = soup.find_all("div" , class_="text-right")
-# print(result)
+    def close_driver(self):
+        self.driver.quit()
+        print("=========> driver closed")
