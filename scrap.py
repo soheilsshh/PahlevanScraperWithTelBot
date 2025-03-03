@@ -5,7 +5,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
-import time
+from time import sleep
 
 #set the global pass and username
 USER_NAME = 40123313
@@ -15,6 +15,8 @@ PASSWORD = 6440160877
 driver = webdriver.Firefox()
 
 driver.get("https://sport.shahroodut.ac.ir/SportLogin")
+print("=========> open site")
+sleep(1)
 #driver.maximize_window()
 
 #define elemnt 
@@ -22,6 +24,8 @@ username_elemnt = driver.find_element(By.ID , "txtusv")
 pasword_elemnt = driver.find_element(By.ID , "passv")
 check_box_element = driver.find_element(By.ID , "txtcode")
 submit = driver.find_element(By.ID , "btlogin")
+print("=========> finde needed elements")
+sleep(1)
 
 #send key for username
 username_elemnt.send_keys(USER_NAME)
@@ -33,18 +37,31 @@ pasword_elemnt.send_keys(PASSWORD)
 text_textcode = driver.find_element(By.ID , "lbcode")
 exe_codetext = eval(text_textcode.text)
 check_box_element.send_keys(exe_codetext)
-
-
-#create action
-action = ActionChains(driver)
-action.click(on_element = submit)
-action.perform()
-WebDriverWait(driver , 600)
-
+print("=========> send info into input box and submit")
+submit.click()
+sleep(1)
 
 #get all of cors
-cours = driver.find_element(By.LINK_TEXT , "دوره ها و کلاس ها")
+cours = driver.find_element(By.XPATH , '//*[@id="nav-accordion"]/li[4]/a')
 cours.click()
+print("=========>  click on course linke")
+sleep(1)
+
+#selecting course
+selecting_list = [driver.find_element(By.XPATH , '//*[@id="ctl00_ContentPlaceHolder1_dpfields"]/option[6]'),
+                  driver.find_element(By.XPATH , '//*[@id="ctl00_ContentPlaceHolder1_dpsalon"]/option[9]')]
+for select in selecting_list:
+    print(f"clicking on {select.text}")
+    select.click()
+ 
+
+
+
+
+#finish
+# print ("Done")
+# driver.quit()
+# print("Finished")    
 
 
 # # Set up the Chrome WebDriver
