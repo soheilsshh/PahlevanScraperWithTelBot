@@ -5,6 +5,10 @@ name = "pypi"
 
 [packages]
 pytelegrambotapi = "*"
+pyrogram = "*"
+requests = "*"
+beautifulsoup4 = "*"
+selenium = "*"
 
 [dev-packages]
 
